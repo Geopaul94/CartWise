@@ -21,7 +21,9 @@ so screenshots reflect the finished UI.
 ## Remaining sprints (spec parity), in planned order
 ~~5. **Auto-Aisle Sorting**~~ ✅ done — `Aisle.kt` keyword classifier (11 categories), `GroceryItemEntity.aisle`,
    DB v3, grouped sticky-header `LazyColumn`, muted "Checked (N)" section at bottom
-6. **Budget Tracker** — add `estimatedPrice` to items, running total vs. list budget, warning near limit
+~~6. **Budget Tracker**~~ ✅ done — `estimatedPrice` on items, `budget` on lists (DB v4); `BudgetSummaryBar`
+   (₹total/₹budget + progress bar, error color at 90%); `SetBudgetDialog` (₹ icon in top bar); price
+   field added to `AddItemBar`; price shown on `GroceryItemRow` when > 0
 7. **Smart Restock** — "Restock" action rebuilds last list's items in a new list with one tap
 8. **Spend History** — monthly spend log by category (depends on sprint 6's price field)
 9. **Home screen widget** — Glance AppWidget showing active list, tap item to check off without opening app

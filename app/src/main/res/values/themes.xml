@@ -1,0 +1,5 @@
+<resources>
+    <!-- Compose owns the real theming (presentation/theme/Theme.kt); this base
+         theme just needs to exist for the manifest and avoid a system default flash. -->
+    <style name="Theme.CartWise" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

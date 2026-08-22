@@ -19,7 +19,8 @@ so screenshots reflect the finished UI.
    `ParseSpokenItemsUseCase` splits "eggs and bread" into separate items
 
 ## Remaining sprints (spec parity), in planned order
-5. **Auto-Aisle Sorting** — add `aisle`/`category` to `GroceryItemEntity`, group `GroceryListScreen` by aisle
+~~5. **Auto-Aisle Sorting**~~ ✅ done — `Aisle.kt` keyword classifier (11 categories), `GroceryItemEntity.aisle`,
+   DB v3, grouped sticky-header `LazyColumn`, muted "Checked (N)" section at bottom
 6. **Budget Tracker** — add `estimatedPrice` to items, running total vs. list budget, warning near limit
 7. **Smart Restock** — "Restock" action rebuilds last list's items in a new list with one tap
 8. **Spend History** — monthly spend log by category (depends on sprint 6's price field)

@@ -9,5 +9,6 @@ data class GroceryItem(
     val id: Long = 0L,
     val name: String,
     val isChecked: Boolean = false,
+    val aisle: String = Aisle.OTHER,
     val createdAt: Long
 )

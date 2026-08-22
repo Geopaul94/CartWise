@@ -34,7 +34,13 @@ class GroceryListViewModel(
     init {
         viewModelScope.launch {
             observeGroceryItems(listId).collect { items ->
-                _uiState.update { it.copy(items = items) }
+                val unchecked = items.filter { !it.isChecked }
+                val checked = items.filter { it.isChecked }
+                // DB already sorts by aisle ASC, so groupBy preserves that order.
+                val groups = unchecked
+                    .groupBy { it.aisle }
+                    .map { (aisle, groupItems) -> AisleGroup(aisle, groupItems) }
+                _uiState.update { it.copy(aisleGroups = groups, checkedItems = checked) }
             }
         }
     }

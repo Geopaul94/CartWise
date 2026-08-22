@@ -7,6 +7,7 @@ import android.speech.RecognizerIntent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,14 +29,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.geo.cartwise.presentation.common.components.EmptyState
 import com.geo.cartwise.presentation.list.components.AddItemBar
+import com.geo.cartwise.presentation.list.components.AisleHeader
 import com.geo.cartwise.presentation.list.components.GroceryItemRow
 
-/**
- * Screen-level composable: pure layout + state wiring. All business logic
- * lives in [GroceryListViewModel]; all reusable UI pieces live under
- * presentation/list/components. Keep it that way as this screen grows.
- */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun GroceryListScreen(
     listName: String,
@@ -46,8 +43,7 @@ fun GroceryListScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    // The system speech-recognition dialog does its own audio capture in a
-    // separate app, so no RECORD_AUDIO permission is needed here.
+    // System speech dialog handles its own audio; no RECORD_AUDIO permission needed.
     val voiceLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -60,6 +56,8 @@ fun GroceryListScreen(
             }
         }
     }
+
+    val isEmpty = uiState.aisleGroups.isEmpty() && uiState.checkedItems.isEmpty()
 
     Scaffold(
         topBar = {
@@ -93,7 +91,7 @@ fun GroceryListScreen(
             )
         }
     ) { paddingValues ->
-        if (uiState.items.isEmpty()) {
+        if (isEmpty) {
             EmptyState(
                 icon = Icons.Filled.ShoppingCart,
                 title = "Your list is empty",
@@ -106,12 +104,35 @@ fun GroceryListScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                items(uiState.items, key = { it.id }) { item ->
-                    GroceryItemRow(
-                        item = item,
-                        onCheckedChange = { checked -> viewModel.onToggleChecked(item.id, checked) },
-                        onDelete = { viewModel.onDeleteItem(item.id) }
-                    )
+                // Unchecked items — one stickyHeader per aisle group
+                for (group in uiState.aisleGroups) {
+                    stickyHeader(key = "header_${group.aisle}") {
+                        AisleHeader(label = group.aisle)
+                    }
+                    items(group.items, key = { it.id }) { item ->
+                        GroceryItemRow(
+                            item = item,
+                            onCheckedChange = { checked -> viewModel.onToggleChecked(item.id, checked) },
+                            onDelete = { viewModel.onDeleteItem(item.id) }
+                        )
+                    }
+                }
+
+                // Checked items sink to the bottom under their own muted header
+                if (uiState.checkedItems.isNotEmpty()) {
+                    stickyHeader(key = "header_checked") {
+                        AisleHeader(
+                            label = "Checked (${uiState.checkedItems.size})",
+                            muted = true
+                        )
+                    }
+                    items(uiState.checkedItems, key = { "checked_${it.id}" }) { item ->
+                        GroceryItemRow(
+                            item = item,
+                            onCheckedChange = { checked -> viewModel.onToggleChecked(item.id, checked) },
+                            onDelete = { viewModel.onDeleteItem(item.id) }
+                        )
+                    }
                 }
             }
         }

@@ -31,5 +31,6 @@ data class GroceryItemEntity(
     val listId: Long,
     val name: String,
     val isChecked: Boolean,
+    val aisle: String,
     val createdAt: Long
 )

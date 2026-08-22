@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface GroceryItemDao {
     // Unchecked items first (newest first), then checked items sink to the
     // bottom — matches the "checked items fade and move to bottom" UX direction.
-    @Query("SELECT * FROM grocery_items WHERE listId = :listId ORDER BY isChecked ASC, createdAt DESC")
+    @Query("SELECT * FROM grocery_items WHERE listId = :listId ORDER BY isChecked ASC, aisle ASC, createdAt DESC")
     fun observeByList(listId: Long): Flow<List<GroceryItemEntity>>
 
     // One grouped query instead of one flow per list — stays cheap as the

@@ -9,7 +9,7 @@ import com.geo.cartwise.data.local.entity.GroceryListEntity
 
 @Database(
     entities = [GroceryListEntity::class, GroceryItemEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 abstract class CartWiseDatabase : RoomDatabase() {

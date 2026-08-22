@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
  */
 interface GroceryItemRepository {
     fun observeItems(listId: Long): Flow<List<GroceryItem>>
-    suspend fun addItem(listId: Long, name: String)
+    suspend fun addItem(listId: Long, name: String, aisle: String)
     suspend fun setChecked(id: Long, isChecked: Boolean)
     suspend fun deleteItem(id: Long)
 }

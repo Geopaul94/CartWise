@@ -3,14 +3,18 @@ package com.geo.cartwise.di
 import android.content.Context
 import androidx.room.Room
 import com.geo.cartwise.data.local.CartWiseDatabase
+import com.geo.cartwise.data.remote.NetworkModule
 import com.geo.cartwise.data.repository.GroceryItemRepositoryImpl
 import com.geo.cartwise.data.repository.GroceryListRepositoryImpl
+import com.geo.cartwise.data.repository.ProductLookupRepositoryImpl
 import com.geo.cartwise.domain.repository.GroceryItemRepository
 import com.geo.cartwise.domain.repository.GroceryListRepository
+import com.geo.cartwise.domain.repository.ProductLookupRepository
 import com.geo.cartwise.domain.usecase.AddGroceryItemUseCase
 import com.geo.cartwise.domain.usecase.CreateGroceryListUseCase
 import com.geo.cartwise.domain.usecase.DeleteGroceryItemUseCase
 import com.geo.cartwise.domain.usecase.DeleteGroceryListUseCase
+import com.geo.cartwise.domain.usecase.LookupProductUseCase
 import com.geo.cartwise.domain.usecase.ObserveGroceryItemsUseCase
 import com.geo.cartwise.domain.usecase.ObserveGroceryListsUseCase
 import com.geo.cartwise.domain.usecase.SetItemCheckedUseCase
@@ -47,4 +51,9 @@ class AppContainer(context: Context) {
     val addGroceryItemUseCase = AddGroceryItemUseCase(groceryItemRepository)
     val setItemCheckedUseCase = SetItemCheckedUseCase(groceryItemRepository)
     val deleteGroceryItemUseCase = DeleteGroceryItemUseCase(groceryItemRepository)
+
+    private val productLookupRepository: ProductLookupRepository =
+        ProductLookupRepositoryImpl(NetworkModule.createOpenFoodFactsApi())
+
+    val lookupProductUseCase = LookupProductUseCase(productLookupRepository)
 }

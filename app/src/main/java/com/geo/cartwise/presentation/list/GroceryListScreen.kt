@@ -32,7 +32,8 @@ import com.geo.cartwise.presentation.list.components.GroceryItemRow
 fun GroceryListScreen(
     listName: String,
     viewModel: GroceryListViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onScanClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -52,7 +53,8 @@ fun GroceryListScreen(
             AddItemBar(
                 value = uiState.inputText,
                 onValueChange = viewModel::onInputChange,
-                onSubmit = viewModel::onAddItem
+                onSubmit = viewModel::onAddItem,
+                onScanClick = onScanClick
             )
         }
     ) { paddingValues ->

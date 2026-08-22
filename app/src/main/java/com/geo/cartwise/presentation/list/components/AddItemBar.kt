@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -19,15 +21,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 /**
- * Reusable text-entry row for adding a new item. Takes state + callbacks only —
- * no ViewModel reference — so it can be reused on any screen that needs "type a
- * name, tap add" (e.g. a future add-to-multiple-lists flow).
+ * Reusable text-entry row for adding a new item, plus a shortcut into barcode
+ * scanning. Takes state + callbacks only — no ViewModel reference — so it can
+ * be reused on any screen that needs "type a name, tap add".
  */
 @Composable
 fun AddItemBar(
     value: String,
     onValueChange: (String) -> Unit,
     onSubmit: () -> Unit,
+    onScanClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -44,7 +47,14 @@ fun AddItemBar(
             shape = RoundedCornerShape(14.dp),
             singleLine = true
         )
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(8.dp))
+        FilledTonalIconButton(
+            onClick = onScanClick,
+            modifier = Modifier.size(56.dp)
+        ) {
+            Icon(Icons.Filled.CameraAlt, contentDescription = "Scan barcode")
+        }
+        Spacer(modifier = Modifier.width(8.dp))
         FilledIconButton(
             onClick = onSubmit,
             modifier = Modifier.size(56.dp)

@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.geo.cartwise.di.AppContainer
+import com.geo.cartwise.presentation.barcode.BarcodeScanViewModel
+import com.geo.cartwise.presentation.barcode.BarcodeScannerScreen
 import com.geo.cartwise.presentation.list.GroceryListScreen
 import com.geo.cartwise.presentation.list.GroceryListViewModel
 import com.geo.cartwise.presentation.lists.ListsScreen
@@ -16,16 +18,19 @@ import com.geo.cartwise.presentation.lists.ListsViewModel
 
 private const val ROUTE_LISTS = "lists"
 private const val ROUTE_LIST = "list/{listId}/{listName}"
+private const val ROUTE_SCAN = "scan/{listId}"
 
 private fun listRoute(listId: Long, listName: String): String {
     val encodedName = Uri.encode(listName)
     return "list/$listId/$encodedName"
 }
 
+private fun scanRoute(listId: Long): String = "scan/$listId"
+
 /**
- * Two-screen nav graph: [ListsScreen] (home) -> [GroceryListScreen] (one list's
- * items). The list's name travels in the route so the item screen never needs
- * to re-query it.
+ * Nav graph: [ListsScreen] (home) -> [GroceryListScreen] (one list's items)
+ * -> [BarcodeScannerScreen] (scan into that same list). The list's name
+ * travels in the route so downstream screens never need to re-query it.
  */
 @Composable
 fun CartWiseNavHost(container: AppContainer) {
@@ -67,6 +72,24 @@ fun CartWiseNavHost(container: AppContainer) {
             )
             GroceryListScreen(
                 listName = listName,
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onScanClick = { navController.navigate(scanRoute(listId)) }
+            )
+        }
+        composable(
+            route = ROUTE_SCAN,
+            arguments = listOf(navArgument("listId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val listId = backStackEntry.arguments?.getLong("listId") ?: 0L
+            val viewModel: BarcodeScanViewModel = viewModel(
+                factory = BarcodeScanViewModel.Factory(
+                    listId = listId,
+                    lookupProduct = container.lookupProductUseCase,
+                    addGroceryItem = container.addGroceryItemUseCase
+                )
+            )
+            BarcodeScannerScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() }
             )

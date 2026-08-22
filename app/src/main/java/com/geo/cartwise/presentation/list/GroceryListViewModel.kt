@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.geo.cartwise.domain.usecase.AddGroceryItemUseCase
 import com.geo.cartwise.domain.usecase.DeleteGroceryItemUseCase
 import com.geo.cartwise.domain.usecase.ObserveGroceryItemsUseCase
+import com.geo.cartwise.domain.usecase.ParseSpokenItemsUseCase
 import com.geo.cartwise.domain.usecase.SetItemCheckedUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +24,7 @@ class GroceryListViewModel(
     private val addGroceryItem: AddGroceryItemUseCase,
     private val setItemChecked: SetItemCheckedUseCase,
     private val deleteGroceryItem: DeleteGroceryItemUseCase,
+    private val parseSpokenItems: ParseSpokenItemsUseCase,
     observeGroceryItems: ObserveGroceryItemsUseCase
 ) : ViewModel() {
 
@@ -50,6 +52,15 @@ class GroceryListViewModel(
         }
     }
 
+    /** "eggs and bread" from the mic becomes two items in one go. */
+    fun onVoiceResult(spokenText: String) {
+        val names = parseSpokenItems(spokenText)
+        if (names.isEmpty()) return
+        viewModelScope.launch {
+            names.forEach { name -> addGroceryItem(listId, name) }
+        }
+    }
+
     fun onToggleChecked(id: Long, isChecked: Boolean) {
         viewModelScope.launch { setItemChecked(id, isChecked) }
     }
@@ -63,7 +74,8 @@ class GroceryListViewModel(
         private val observeGroceryItems: ObserveGroceryItemsUseCase,
         private val addGroceryItem: AddGroceryItemUseCase,
         private val setItemChecked: SetItemCheckedUseCase,
-        private val deleteGroceryItem: DeleteGroceryItemUseCase
+        private val deleteGroceryItem: DeleteGroceryItemUseCase,
+        private val parseSpokenItems: ParseSpokenItemsUseCase
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -72,6 +84,7 @@ class GroceryListViewModel(
                 addGroceryItem,
                 setItemChecked,
                 deleteGroceryItem,
+                parseSpokenItems,
                 observeGroceryItems
             ) as T
         }

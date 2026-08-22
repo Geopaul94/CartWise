@@ -17,6 +17,7 @@ import com.geo.cartwise.domain.usecase.DeleteGroceryListUseCase
 import com.geo.cartwise.domain.usecase.LookupProductUseCase
 import com.geo.cartwise.domain.usecase.ObserveGroceryItemsUseCase
 import com.geo.cartwise.domain.usecase.ObserveGroceryListsUseCase
+import com.geo.cartwise.domain.usecase.ParseSpokenItemsUseCase
 import com.geo.cartwise.domain.usecase.SetItemCheckedUseCase
 
 /**
@@ -51,6 +52,7 @@ class AppContainer(context: Context) {
     val addGroceryItemUseCase = AddGroceryItemUseCase(groceryItemRepository)
     val setItemCheckedUseCase = SetItemCheckedUseCase(groceryItemRepository)
     val deleteGroceryItemUseCase = DeleteGroceryItemUseCase(groceryItemRepository)
+    val parseSpokenItemsUseCase = ParseSpokenItemsUseCase()
 
     private val productLookupRepository: ProductLookupRepository =
         ProductLookupRepositoryImpl(NetworkModule.createOpenFoodFactsApi())

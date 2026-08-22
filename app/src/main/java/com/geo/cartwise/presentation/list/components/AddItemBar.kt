@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -31,6 +32,7 @@ fun AddItemBar(
     onValueChange: (String) -> Unit,
     onSubmit: () -> Unit,
     onScanClick: () -> Unit,
+    onVoiceClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -47,17 +49,24 @@ fun AddItemBar(
             shape = RoundedCornerShape(14.dp),
             singleLine = true
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(6.dp))
         FilledTonalIconButton(
             onClick = onScanClick,
-            modifier = Modifier.size(56.dp)
+            modifier = Modifier.size(48.dp)
         ) {
             Icon(Icons.Filled.CameraAlt, contentDescription = "Scan barcode")
         }
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(6.dp))
+        FilledTonalIconButton(
+            onClick = onVoiceClick,
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(Icons.Filled.Mic, contentDescription = "Add items by voice")
+        }
+        Spacer(modifier = Modifier.width(6.dp))
         FilledIconButton(
             onClick = onSubmit,
-            modifier = Modifier.size(56.dp)
+            modifier = Modifier.size(48.dp)
         ) {
             Icon(Icons.Filled.Add, contentDescription = "Add item")
         }

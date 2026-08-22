@@ -32,6 +32,21 @@ interface GroceryItemDao {
 
     @Query("DELETE FROM grocery_items WHERE id = :id")
     suspend fun delete(id: Long)
+
+    // Groups checked items by month (YYYY-MM) and aisle so SpendHistoryScreen
+    // can show a monthly breakdown without a separate table.
+    @Query("""
+        SELECT
+            strftime('%Y-%m', createdAt / 1000, 'unixepoch') AS month,
+            aisle,
+            SUM(estimatedPrice) AS total
+        FROM grocery_items
+        WHERE isChecked = 1 AND estimatedPrice > 0
+        GROUP BY month, aisle
+        ORDER BY month DESC
+    """)
+    fun observeSpendHistory(): Flow<List<AisleSpend>>
 }
 
 data class RemainingCount(val listId: Long, val count: Int)
+data class AisleSpend(val month: String, val aisle: String, val total: Double)

@@ -3,6 +3,7 @@ package com.geo.cartwise.data.repository
 import com.geo.cartwise.data.local.dao.GroceryItemDao
 import com.geo.cartwise.data.local.entity.GroceryItemEntity
 import com.geo.cartwise.domain.model.GroceryItem
+import com.geo.cartwise.domain.model.SpendRecord
 import com.geo.cartwise.domain.repository.GroceryItemRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -13,6 +14,11 @@ class GroceryItemRepositoryImpl(
 
     override fun observeItems(listId: Long): Flow<List<GroceryItem>> =
         dao.observeByList(listId).map { entities -> entities.map { it.toDomain() } }
+
+    override fun observeSpendHistory(): Flow<List<SpendRecord>> =
+        dao.observeSpendHistory().map { rows ->
+            rows.map { SpendRecord(month = it.month, aisle = it.aisle, total = it.total) }
+        }
 
     override suspend fun addItem(listId: Long, name: String, aisle: String, estimatedPrice: Double) {
         dao.insert(

@@ -8,11 +8,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -34,7 +36,8 @@ import com.geo.cartwise.presentation.lists.components.ListCard
 @Composable
 fun ListsScreen(
     viewModel: ListsViewModel,
-    onOpenList: (listId: Long, listName: String) -> Unit
+    onOpenList: (listId: Long, listName: String) -> Unit,
+    onOpenHistory: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -46,6 +49,11 @@ fun ListsScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("CartWise") },
+                actions = {
+                    IconButton(onClick = onOpenHistory) {
+                        Icon(Icons.Filled.BarChart, contentDescription = "Spend history")
+                    }
+                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors()
             )
         },

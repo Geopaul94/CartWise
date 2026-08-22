@@ -11,6 +11,8 @@ import androidx.navigation.navArgument
 import com.geo.cartwise.di.AppContainer
 import com.geo.cartwise.presentation.barcode.BarcodeScanViewModel
 import com.geo.cartwise.presentation.barcode.BarcodeScannerScreen
+import com.geo.cartwise.presentation.history.SpendHistoryScreen
+import com.geo.cartwise.presentation.history.SpendHistoryViewModel
 import com.geo.cartwise.presentation.list.GroceryListScreen
 import com.geo.cartwise.presentation.list.GroceryListViewModel
 import com.geo.cartwise.presentation.lists.ListsScreen
@@ -19,6 +21,7 @@ import com.geo.cartwise.presentation.lists.ListsViewModel
 private const val ROUTE_LISTS = "lists"
 private const val ROUTE_LIST = "list/{listId}/{listName}"
 private const val ROUTE_SCAN = "scan/{listId}"
+private const val ROUTE_HISTORY = "spend_history"
 
 private fun listRoute(listId: Long, listName: String): String {
     val encodedName = Uri.encode(listName)
@@ -49,7 +52,17 @@ fun CartWiseNavHost(container: AppContainer) {
                 viewModel = viewModel,
                 onOpenList = { listId, listName ->
                     navController.navigate(listRoute(listId, listName))
-                }
+                },
+                onOpenHistory = { navController.navigate(ROUTE_HISTORY) }
+            )
+        }
+        composable(ROUTE_HISTORY) {
+            val viewModel: SpendHistoryViewModel = viewModel(
+                factory = SpendHistoryViewModel.Factory(container.observeSpendHistoryUseCase)
+            )
+            SpendHistoryScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() }
             )
         }
         composable(

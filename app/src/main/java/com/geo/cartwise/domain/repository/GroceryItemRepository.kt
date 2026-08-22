@@ -1,6 +1,7 @@
 package com.geo.cartwise.domain.repository
 
 import com.geo.cartwise.domain.model.GroceryItem
+import com.geo.cartwise.domain.model.SpendRecord
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
  */
 interface GroceryItemRepository {
     fun observeItems(listId: Long): Flow<List<GroceryItem>>
+    fun observeSpendHistory(): Flow<List<SpendRecord>>
     suspend fun addItem(listId: Long, name: String, aisle: String, estimatedPrice: Double)
     suspend fun setChecked(id: Long, isChecked: Boolean)
     suspend fun setItemPrice(id: Long, price: Double)

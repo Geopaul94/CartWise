@@ -23,6 +23,7 @@ import com.geo.cartwise.domain.usecase.RestockListUseCase
 import com.geo.cartwise.domain.usecase.SetItemCheckedUseCase
 import com.geo.cartwise.domain.usecase.ObserveSpendHistoryUseCase
 import com.geo.cartwise.domain.usecase.SetItemPriceUseCase
+import com.geo.cartwise.domain.usecase.SuggestItemNamesUseCase
 import com.geo.cartwise.domain.usecase.SetListBudgetUseCase
 
 /**
@@ -67,6 +68,7 @@ class AppContainer(context: Context) {
     val restockListUseCase = RestockListUseCase(groceryItemRepository)
     val deleteGroceryItemUseCase = DeleteGroceryItemUseCase(groceryItemRepository)
     val observeSpendHistoryUseCase = ObserveSpendHistoryUseCase(groceryItemRepository)
+    val suggestItemNamesUseCase = SuggestItemNamesUseCase(groceryItemRepository)
     val parseSpokenItemsUseCase = ParseSpokenItemsUseCase()
 
     private val productLookupRepository: ProductLookupRepository =

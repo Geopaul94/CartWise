@@ -33,6 +33,16 @@ interface GroceryItemDao {
     @Query("SELECT * FROM grocery_items WHERE id = :id LIMIT 1")
     suspend fun getById(id: Long): GroceryItemEntity?
 
+    // Returns up to 5 distinct item names that start with the query string,
+    // most-recently added first — used for the autosuggest dropdown.
+    @Query("""
+        SELECT DISTINCT name FROM grocery_items
+        WHERE name LIKE :query || '%'
+        ORDER BY createdAt DESC
+        LIMIT 5
+    """)
+    suspend fun getSuggestedNames(query: String): List<String>
+
     // Returns every unchecked item for a list; used by the home-screen widget
     // to show what still needs to be bought.
     @Query("SELECT * FROM grocery_items WHERE listId = :listId AND isChecked = 0 ORDER BY aisle ASC, name ASC")

@@ -1,5 +1,6 @@
 package com.geo.cartwise.presentation.list.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,6 +34,9 @@ fun AddItemBar(
     onSubmit: () -> Unit,
     onScanClick: () -> Unit,
     onVoiceClick: () -> Unit,
+    suggestions: List<String> = emptyList(),
+    onSuggestionSelected: (String) -> Unit = {},
+    onDismissSuggestions: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -40,15 +44,26 @@ fun AddItemBar(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 10.dp)
     ) {
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Add an item, e.g. milk") },
-            shape = RoundedCornerShape(14.dp),
-            singleLine = true
-        )
+        // Box lets the DropdownMenu anchor to the text field's position.
+        Box(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = value,
+                onValueChange = onValueChange,
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Add an item, e.g. milk") },
+                shape = RoundedCornerShape(14.dp),
+                singleLine = true
+            )
+            ItemSuggestionDropdown(
+                suggestions = suggestions,
+                expanded = suggestions.isNotEmpty(),
+                onSelect = onSuggestionSelected,
+                onDismiss = onDismissSuggestions
+            )
+        }
+
         Spacer(modifier = Modifier.padding(top = 8.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically

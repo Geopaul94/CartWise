@@ -15,5 +15,6 @@ data class GroceryListUiState(
     val budget: Double = 0.0,
     val totalEstimatedPrice: Double = 0.0,
     val showSetBudgetDialog: Boolean = false,
-    val showRestockDialog: Boolean = false
+    val showRestockDialog: Boolean = false,
+    val suggestions: List<String> = emptyList()
 )

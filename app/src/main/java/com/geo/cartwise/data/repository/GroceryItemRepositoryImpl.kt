@@ -20,6 +20,9 @@ class GroceryItemRepositoryImpl(
             rows.map { SpendRecord(month = it.month, aisle = it.aisle, total = it.total) }
         }
 
+    override suspend fun suggestItemNames(query: String): List<String> =
+        dao.getSuggestedNames(query)
+
     override suspend fun addItem(listId: Long, name: String, aisle: String, estimatedPrice: Double) {
         dao.insert(
             GroceryItemEntity(

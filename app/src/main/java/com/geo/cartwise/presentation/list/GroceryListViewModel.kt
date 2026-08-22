@@ -11,6 +11,9 @@ import com.geo.cartwise.domain.usecase.ParseSpokenItemsUseCase
 import com.geo.cartwise.domain.usecase.RestockListUseCase
 import com.geo.cartwise.domain.usecase.SetItemCheckedUseCase
 import com.geo.cartwise.domain.usecase.SetListBudgetUseCase
+import com.geo.cartwise.domain.usecase.SuggestItemNamesUseCase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,9 +28,14 @@ class GroceryListViewModel(
     private val parseSpokenItems: ParseSpokenItemsUseCase,
     private val setListBudget: SetListBudgetUseCase,
     private val restockList: RestockListUseCase,
+    private val suggestItemNames: SuggestItemNamesUseCase,
     observeGroceryItems: ObserveGroceryItemsUseCase,
     observeListBudget: ObserveListBudgetUseCase
 ) : ViewModel() {
+
+    // Holds the pending suggestion fetch so we can cancel it when the user
+    // types again before the 300ms debounce fires.
+    private var suggestJob: Job? = null
 
     private val _uiState = MutableStateFlow(GroceryListUiState())
     val uiState: StateFlow<GroceryListUiState> = _uiState.asStateFlow()
@@ -56,6 +64,24 @@ class GroceryListViewModel(
 
     fun onInputChange(text: String) {
         _uiState.update { it.copy(inputText = text) }
+        // Cancel any in-flight query, then wait 300ms before firing a new one.
+        // This way we only hit the DB once the user pauses, not on every keystroke.
+        suggestJob?.cancel()
+        suggestJob = viewModelScope.launch {
+            delay(300)
+            val results = suggestItemNames(text)
+            _uiState.update { it.copy(suggestions = results) }
+        }
+    }
+
+    fun onSuggestionSelected(name: String) {
+        suggestJob?.cancel()
+        // Fill the text field and clear the dropdown immediately.
+        _uiState.update { it.copy(inputText = name, suggestions = emptyList()) }
+    }
+
+    fun onDismissSuggestions() {
+        _uiState.update { it.copy(suggestions = emptyList()) }
     }
 
     fun onPriceChange(text: String) {
@@ -75,7 +101,7 @@ class GroceryListViewModel(
         val price = _uiState.value.priceInput.toDoubleOrNull() ?: 0.0
         viewModelScope.launch {
             addGroceryItem(listId, name, price)
-            _uiState.update { it.copy(inputText = "", priceInput = "") }
+            _uiState.update { it.copy(inputText = "", priceInput = "", suggestions = emptyList()) }
         }
     }
 
@@ -135,7 +161,8 @@ class GroceryListViewModel(
         private val parseSpokenItems: ParseSpokenItemsUseCase,
         private val observeListBudget: ObserveListBudgetUseCase,
         private val setListBudget: SetListBudgetUseCase,
-        private val restockList: RestockListUseCase
+        private val restockList: RestockListUseCase,
+        private val suggestItemNames: SuggestItemNamesUseCase
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -147,6 +174,7 @@ class GroceryListViewModel(
                 parseSpokenItems,
                 setListBudget,
                 restockList,
+                suggestItemNames,
                 observeGroceryItems,
                 observeListBudget
             ) as T

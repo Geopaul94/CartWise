@@ -84,7 +84,8 @@ fun CartWiseNavHost(container: AppContainer) {
                     parseSpokenItems = container.parseSpokenItemsUseCase,
                     observeListBudget = container.observeListBudgetUseCase,
                     setListBudget = container.setListBudgetUseCase,
-                    restockList = container.restockListUseCase
+                    restockList = container.restockListUseCase,
+                    suggestItemNames = container.suggestItemNamesUseCase
                 )
             )
             GroceryListScreen(

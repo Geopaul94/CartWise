@@ -30,6 +30,7 @@ reflect the finished UI.
 | 7 | Smart restock | ↺ icon in top bar (disabled when nothing checked); `RestockConfirmDialog`; `RestockListUseCase` → `uncheckAll(listId)` bulk UPDATE |
 | 8 | Spend History | `SpendHistoryScreen` + `SpendHistoryViewModel`; `MonthPicker` (last 6 months); `SpendCategoryRow` with fraction progress bar; grand-total card; `observeSpendHistory()` DAO query (checked items grouped by YYYY-MM + aisle); ₹ chart icon in `ListsScreen` top bar navigates to history |
 | 9 | Home Screen Widget | `CartWiseWidget` (GlanceAppWidget) shows unchecked items from the busiest list; `CartWiseWidgetReceiver`; `ToggleItemActionCallback` checks off an item without opening the app; `GroceryItemDao` extended with `getById`, `getUncheckedByList`, `getListIdWithMostUnchecked`; `GroceryListDao` extended with `getNameById`; `AppContainer` exposes DAOs for widget access; registered in AndroidManifest |
+| 10 | Smart Autosuggest | `getSuggestedNames` DAO query (DISTINCT name LIKE query, newest-first, limit 5); `SuggestItemNamesUseCase`; 300ms debounce in `GroceryListViewModel` via `Job` cancel/relaunch; `suggestions` field in `GroceryListUiState`; `ItemSuggestionDropdown` (`DropdownMenu` anchored to name field); `AddItemBar` wraps field in `Box`; selecting a suggestion fills `inputText` and clears dropdown |
 
 ---
 

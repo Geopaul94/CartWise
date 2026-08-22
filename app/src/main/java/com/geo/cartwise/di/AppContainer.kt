@@ -17,8 +17,11 @@ import com.geo.cartwise.domain.usecase.DeleteGroceryListUseCase
 import com.geo.cartwise.domain.usecase.LookupProductUseCase
 import com.geo.cartwise.domain.usecase.ObserveGroceryItemsUseCase
 import com.geo.cartwise.domain.usecase.ObserveGroceryListsUseCase
+import com.geo.cartwise.domain.usecase.ObserveListBudgetUseCase
 import com.geo.cartwise.domain.usecase.ParseSpokenItemsUseCase
 import com.geo.cartwise.domain.usecase.SetItemCheckedUseCase
+import com.geo.cartwise.domain.usecase.SetItemPriceUseCase
+import com.geo.cartwise.domain.usecase.SetListBudgetUseCase
 
 /**
  * Manual dependency injection: one place that wires "real" implementations
@@ -47,10 +50,13 @@ class AppContainer(context: Context) {
     val observeGroceryListsUseCase = ObserveGroceryListsUseCase(groceryListRepository)
     val createGroceryListUseCase = CreateGroceryListUseCase(groceryListRepository)
     val deleteGroceryListUseCase = DeleteGroceryListUseCase(groceryListRepository)
+    val observeListBudgetUseCase = ObserveListBudgetUseCase(groceryListRepository)
+    val setListBudgetUseCase = SetListBudgetUseCase(groceryListRepository)
 
     val observeGroceryItemsUseCase = ObserveGroceryItemsUseCase(groceryItemRepository)
     val addGroceryItemUseCase = AddGroceryItemUseCase(groceryItemRepository)
     val setItemCheckedUseCase = SetItemCheckedUseCase(groceryItemRepository)
+    val setItemPriceUseCase = SetItemPriceUseCase(groceryItemRepository)
     val deleteGroceryItemUseCase = DeleteGroceryItemUseCase(groceryItemRepository)
     val parseSpokenItemsUseCase = ParseSpokenItemsUseCase()
 

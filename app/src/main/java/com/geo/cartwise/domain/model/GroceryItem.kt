@@ -10,5 +10,6 @@ data class GroceryItem(
     val name: String,
     val isChecked: Boolean = false,
     val aisle: String = Aisle.OTHER,
+    val estimatedPrice: Double = 0.0,
     val createdAt: Long
 )

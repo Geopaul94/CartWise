@@ -12,5 +12,6 @@ data class GroceryListEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
     val name: String,
+    val budget: Double = 0.0,
     val createdAt: Long
 )

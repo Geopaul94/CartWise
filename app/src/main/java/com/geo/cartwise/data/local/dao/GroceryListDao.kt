@@ -11,8 +11,14 @@ interface GroceryListDao {
     @Query("SELECT * FROM grocery_lists ORDER BY createdAt ASC")
     fun observeAll(): Flow<List<GroceryListEntity>>
 
+    @Query("SELECT budget FROM grocery_lists WHERE id = :id")
+    fun observeBudget(id: Long): Flow<Double>
+
     @Insert
     suspend fun insert(list: GroceryListEntity): Long
+
+    @Query("UPDATE grocery_lists SET budget = :budget WHERE id = :id")
+    suspend fun setBudget(id: Long, budget: Double)
 
     @Query("DELETE FROM grocery_lists WHERE id = :id")
     suspend fun delete(id: Long)

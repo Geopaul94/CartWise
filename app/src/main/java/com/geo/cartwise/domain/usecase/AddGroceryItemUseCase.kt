@@ -6,9 +6,9 @@ import com.geo.cartwise.domain.repository.GroceryItemRepository
 class AddGroceryItemUseCase(
     private val repository: GroceryItemRepository
 ) {
-    suspend operator fun invoke(listId: Long, name: String) {
+    suspend operator fun invoke(listId: Long, name: String, estimatedPrice: Double = 0.0) {
         val trimmed = name.trim()
         if (trimmed.isEmpty()) return
-        repository.addItem(listId, trimmed, Aisle.classify(trimmed))
+        repository.addItem(listId, trimmed, Aisle.classify(trimmed), estimatedPrice)
     }
 }

@@ -2,8 +2,10 @@ package com.geo.cartwise.presentation.list.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -59,6 +61,14 @@ fun GroceryItemRow(
                 .weight(1f)
                 .padding(start = 4.dp)
         )
+        if (item.estimatedPrice > 0.0) {
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "₹${"%.2f".format(item.estimatedPrice)}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = textColor
+            )
+        }
         IconButton(onClick = onDelete) {
             Icon(
                 Icons.Filled.Delete,

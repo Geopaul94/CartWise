@@ -6,26 +6,25 @@ import androidx.lifecycle.viewModelScope
 import com.geo.cartwise.domain.usecase.AddGroceryItemUseCase
 import com.geo.cartwise.domain.usecase.DeleteGroceryItemUseCase
 import com.geo.cartwise.domain.usecase.ObserveGroceryItemsUseCase
+import com.geo.cartwise.domain.usecase.ObserveListBudgetUseCase
 import com.geo.cartwise.domain.usecase.ParseSpokenItemsUseCase
 import com.geo.cartwise.domain.usecase.SetItemCheckedUseCase
+import com.geo.cartwise.domain.usecase.SetListBudgetUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * Holds UI state for a single list's items and survives configuration changes
- * (screen rotation). The screen only reads [uiState] and calls these functions —
- * it never talks to a use case or the database directly.
- */
 class GroceryListViewModel(
     private val listId: Long,
     private val addGroceryItem: AddGroceryItemUseCase,
     private val setItemChecked: SetItemCheckedUseCase,
     private val deleteGroceryItem: DeleteGroceryItemUseCase,
     private val parseSpokenItems: ParseSpokenItemsUseCase,
-    observeGroceryItems: ObserveGroceryItemsUseCase
+    private val setListBudget: SetListBudgetUseCase,
+    observeGroceryItems: ObserveGroceryItemsUseCase,
+    observeListBudget: ObserveListBudgetUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GroceryListUiState())
@@ -36,11 +35,19 @@ class GroceryListViewModel(
             observeGroceryItems(listId).collect { items ->
                 val unchecked = items.filter { !it.isChecked }
                 val checked = items.filter { it.isChecked }
-                // DB already sorts by aisle ASC, so groupBy preserves that order.
+                // DB already sorts by aisle ASC so groupBy preserves that order.
                 val groups = unchecked
                     .groupBy { it.aisle }
                     .map { (aisle, groupItems) -> AisleGroup(aisle, groupItems) }
-                _uiState.update { it.copy(aisleGroups = groups, checkedItems = checked) }
+                val total = items.sumOf { it.estimatedPrice }
+                _uiState.update {
+                    it.copy(aisleGroups = groups, checkedItems = checked, totalEstimatedPrice = total)
+                }
+            }
+        }
+        viewModelScope.launch {
+            observeListBudget(listId).collect { budget ->
+                _uiState.update { it.copy(budget = budget) }
             }
         }
     }
@@ -49,20 +56,32 @@ class GroceryListViewModel(
         _uiState.update { it.copy(inputText = text) }
     }
 
+    fun onPriceChange(text: String) {
+        // Allow only digits and a single decimal point.
+        val filtered = text.filter { it.isDigit() || it == '.' }
+            .let { s ->
+                val dotIndex = s.indexOf('.')
+                if (dotIndex == -1) s
+                else s.substring(0, dotIndex + 1) + s.substring(dotIndex + 1).replace(".", "")
+            }
+        _uiState.update { it.copy(priceInput = filtered) }
+    }
+
     fun onAddItem() {
         val name = _uiState.value.inputText
         if (name.isBlank()) return
+        val price = _uiState.value.priceInput.toDoubleOrNull() ?: 0.0
         viewModelScope.launch {
-            addGroceryItem(listId, name)
-            _uiState.update { it.copy(inputText = "") }
+            addGroceryItem(listId, name, price)
+            _uiState.update { it.copy(inputText = "", priceInput = "") }
         }
     }
 
-    /** "eggs and bread" from the mic becomes two items in one go. */
     fun onVoiceResult(spokenText: String) {
         val names = parseSpokenItems(spokenText)
         if (names.isEmpty()) return
         viewModelScope.launch {
+            // Voice items have no price info — user can add prices manually.
             names.forEach { name -> addGroceryItem(listId, name) }
         }
     }
@@ -75,13 +94,30 @@ class GroceryListViewModel(
         viewModelScope.launch { deleteGroceryItem(id) }
     }
 
+    fun onSetBudgetClick() {
+        _uiState.update { it.copy(showSetBudgetDialog = true) }
+    }
+
+    fun onBudgetConfirmed(amount: Double) {
+        viewModelScope.launch {
+            setListBudget(listId, amount)
+            _uiState.update { it.copy(showSetBudgetDialog = false) }
+        }
+    }
+
+    fun onDismissBudgetDialog() {
+        _uiState.update { it.copy(showSetBudgetDialog = false) }
+    }
+
     class Factory(
         private val listId: Long,
         private val observeGroceryItems: ObserveGroceryItemsUseCase,
         private val addGroceryItem: AddGroceryItemUseCase,
         private val setItemChecked: SetItemCheckedUseCase,
         private val deleteGroceryItem: DeleteGroceryItemUseCase,
-        private val parseSpokenItems: ParseSpokenItemsUseCase
+        private val parseSpokenItems: ParseSpokenItemsUseCase,
+        private val observeListBudget: ObserveListBudgetUseCase,
+        private val setListBudget: SetListBudgetUseCase
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -91,7 +127,9 @@ class GroceryListViewModel(
                 setItemChecked,
                 deleteGroceryItem,
                 parseSpokenItems,
-                observeGroceryItems
+                setListBudget,
+                observeGroceryItems,
+                observeListBudget
             ) as T
         }
     }

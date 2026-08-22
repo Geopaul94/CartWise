@@ -21,13 +21,20 @@ class GroceryListRepositoryImpl(
                     id = list.id,
                     name = list.name,
                     createdAt = list.createdAt,
-                    remainingCount = countByListId[list.id] ?: 0
+                    remainingCount = countByListId[list.id] ?: 0,
+                    budget = list.budget
                 )
             }
         }
 
+    override fun observeListBudget(id: Long): Flow<Double> = listDao.observeBudget(id)
+
     override suspend fun createList(name: String): Long =
         listDao.insert(GroceryListEntity(name = name, createdAt = System.currentTimeMillis()))
+
+    override suspend fun setListBudget(id: Long, budget: Double) {
+        listDao.setBudget(id, budget)
+    }
 
     override suspend fun deleteList(id: Long) {
         listDao.delete(id)

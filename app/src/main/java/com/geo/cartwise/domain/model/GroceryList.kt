@@ -4,5 +4,6 @@ data class GroceryList(
     val id: Long = 0L,
     val name: String,
     val createdAt: Long,
-    val remainingCount: Int = 0
+    val remainingCount: Int = 0,
+    val budget: Double = 0.0
 )

@@ -14,16 +14,21 @@ class GroceryItemRepositoryImpl(
     override fun observeItems(listId: Long): Flow<List<GroceryItem>> =
         dao.observeByList(listId).map { entities -> entities.map { it.toDomain() } }
 
-    override suspend fun addItem(listId: Long, name: String, aisle: String) {
+    override suspend fun addItem(listId: Long, name: String, aisle: String, estimatedPrice: Double) {
         dao.insert(
             GroceryItemEntity(
                 listId = listId,
                 name = name,
                 isChecked = false,
                 aisle = aisle,
+                estimatedPrice = estimatedPrice,
                 createdAt = System.currentTimeMillis()
             )
         )
+    }
+
+    override suspend fun setItemPrice(id: Long, price: Double) {
+        dao.setPrice(id, price)
     }
 
     override suspend fun setChecked(id: Long, isChecked: Boolean) {
@@ -40,5 +45,6 @@ private fun GroceryItemEntity.toDomain() = GroceryItem(
     name = name,
     isChecked = isChecked,
     aisle = aisle,
+    estimatedPrice = estimatedPrice,
     createdAt = createdAt
 )

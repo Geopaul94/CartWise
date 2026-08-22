@@ -14,11 +14,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -30,7 +31,9 @@ import androidx.compose.ui.platform.LocalContext
 import com.geo.cartwise.presentation.common.components.EmptyState
 import com.geo.cartwise.presentation.list.components.AddItemBar
 import com.geo.cartwise.presentation.list.components.AisleHeader
+import com.geo.cartwise.presentation.list.components.BudgetSummaryBar
 import com.geo.cartwise.presentation.list.components.GroceryItemRow
+import com.geo.cartwise.presentation.list.components.SetBudgetDialog
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -59,6 +62,14 @@ fun GroceryListScreen(
 
     val isEmpty = uiState.aisleGroups.isEmpty() && uiState.checkedItems.isEmpty()
 
+    if (uiState.showSetBudgetDialog) {
+        SetBudgetDialog(
+            currentBudget = uiState.budget,
+            onConfirm = viewModel::onBudgetConfirmed,
+            onDismiss = viewModel::onDismissBudgetDialog
+        )
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -68,6 +79,11 @@ fun GroceryListScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
+                actions = {
+                    IconButton(onClick = viewModel::onSetBudgetClick) {
+                        Icon(Icons.Filled.AttachMoney, contentDescription = "Set budget")
+                    }
+                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors()
             )
         },
@@ -75,6 +91,8 @@ fun GroceryListScreen(
             AddItemBar(
                 value = uiState.inputText,
                 onValueChange = viewModel::onInputChange,
+                priceValue = uiState.priceInput,
+                onPriceChange = viewModel::onPriceChange,
                 onSubmit = viewModel::onAddItem,
                 onScanClick = onScanClick,
                 onVoiceClick = {
@@ -104,7 +122,17 @@ fun GroceryListScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // Unchecked items — one stickyHeader per aisle group
+                // Budget summary strip — only shown when a budget is set.
+                if (uiState.budget > 0.0) {
+                    item(key = "budget_bar") {
+                        BudgetSummaryBar(
+                            totalEstimatedPrice = uiState.totalEstimatedPrice,
+                            budget = uiState.budget
+                        )
+                    }
+                }
+
+                // Unchecked items grouped by aisle with sticky section headers.
                 for (group in uiState.aisleGroups) {
                     stickyHeader(key = "header_${group.aisle}") {
                         AisleHeader(label = group.aisle)
@@ -118,7 +146,7 @@ fun GroceryListScreen(
                     }
                 }
 
-                // Checked items sink to the bottom under their own muted header
+                // Checked items sink to bottom under a muted header.
                 if (uiState.checkedItems.isNotEmpty()) {
                     stickyHeader(key = "header_checked") {
                         AisleHeader(

@@ -3,20 +3,21 @@ package com.geo.cartwise.data.repository
 import com.geo.cartwise.data.local.dao.GroceryItemDao
 import com.geo.cartwise.data.local.entity.GroceryItemEntity
 import com.geo.cartwise.domain.model.GroceryItem
-import com.geo.cartwise.domain.repository.GroceryRepository
+import com.geo.cartwise.domain.repository.GroceryItemRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class GroceryRepositoryImpl(
+class GroceryItemRepositoryImpl(
     private val dao: GroceryItemDao
-) : GroceryRepository {
+) : GroceryItemRepository {
 
-    override fun observeItems(): Flow<List<GroceryItem>> =
-        dao.observeAll().map { entities -> entities.map { it.toDomain() } }
+    override fun observeItems(listId: Long): Flow<List<GroceryItem>> =
+        dao.observeByList(listId).map { entities -> entities.map { it.toDomain() } }
 
-    override suspend fun addItem(name: String) {
+    override suspend fun addItem(listId: Long, name: String) {
         dao.insert(
             GroceryItemEntity(
+                listId = listId,
                 name = name,
                 isChecked = false,
                 createdAt = System.currentTimeMillis()

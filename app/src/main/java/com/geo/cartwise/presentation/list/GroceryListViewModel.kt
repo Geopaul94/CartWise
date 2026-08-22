@@ -14,15 +14,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * Holds UI state and survives configuration changes (screen rotation).
- * The screen only reads [uiState] and calls these functions — it never talks
- * to a use case or the database directly.
+ * Holds UI state for a single list's items and survives configuration changes
+ * (screen rotation). The screen only reads [uiState] and calls these functions —
+ * it never talks to a use case or the database directly.
  */
 class GroceryListViewModel(
-    private val observeGroceryItems: ObserveGroceryItemsUseCase,
+    private val listId: Long,
     private val addGroceryItem: AddGroceryItemUseCase,
     private val setItemChecked: SetItemCheckedUseCase,
-    private val deleteGroceryItem: DeleteGroceryItemUseCase
+    private val deleteGroceryItem: DeleteGroceryItemUseCase,
+    observeGroceryItems: ObserveGroceryItemsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GroceryListUiState())
@@ -30,7 +31,7 @@ class GroceryListViewModel(
 
     init {
         viewModelScope.launch {
-            observeGroceryItems().collect { items ->
+            observeGroceryItems(listId).collect { items ->
                 _uiState.update { it.copy(items = items) }
             }
         }
@@ -44,7 +45,7 @@ class GroceryListViewModel(
         val name = _uiState.value.inputText
         if (name.isBlank()) return
         viewModelScope.launch {
-            addGroceryItem(name)
+            addGroceryItem(listId, name)
             _uiState.update { it.copy(inputText = "") }
         }
     }
@@ -58,6 +59,7 @@ class GroceryListViewModel(
     }
 
     class Factory(
+        private val listId: Long,
         private val observeGroceryItems: ObserveGroceryItemsUseCase,
         private val addGroceryItem: AddGroceryItemUseCase,
         private val setItemChecked: SetItemCheckedUseCase,
@@ -66,10 +68,11 @@ class GroceryListViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return GroceryListViewModel(
-                observeGroceryItems,
+                listId,
                 addGroceryItem,
                 setItemChecked,
-                deleteGroceryItem
+                deleteGroceryItem,
+                observeGroceryItems
             ) as T
         }
     }

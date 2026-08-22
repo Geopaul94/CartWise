@@ -1,16 +1,16 @@
 package com.geo.cartwise.domain.usecase
 
 import com.geo.cartwise.domain.model.GroceryItem
-import com.geo.cartwise.domain.repository.GroceryRepository
+import com.geo.cartwise.domain.repository.GroceryItemRepository
 import kotlinx.coroutines.flow.Flow
 
 /**
  * A "use case" is a class with one job, named after what it does. The ViewModel
- * calls `observeGroceryItems()` instead of reaching into the repository directly —
- * that keeps business rules (like sort order below) out of both the UI and the DB layer.
+ * calls `observeGroceryItems(listId)` instead of reaching into the repository
+ * directly — that keeps business rules (like sort order in the DAO) out of the UI.
  */
 class ObserveGroceryItemsUseCase(
-    private val repository: GroceryRepository
+    private val repository: GroceryItemRepository
 ) {
-    operator fun invoke(): Flow<List<GroceryItem>> = repository.observeItems()
+    operator fun invoke(listId: Long): Flow<List<GroceryItem>> = repository.observeItems(listId)
 }

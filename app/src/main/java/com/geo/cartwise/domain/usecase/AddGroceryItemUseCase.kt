@@ -1,13 +1,13 @@
 package com.geo.cartwise.domain.usecase
 
-import com.geo.cartwise.domain.repository.GroceryRepository
+import com.geo.cartwise.domain.repository.GroceryItemRepository
 
 class AddGroceryItemUseCase(
-    private val repository: GroceryRepository
+    private val repository: GroceryItemRepository
 ) {
-    suspend operator fun invoke(name: String) {
+    suspend operator fun invoke(listId: Long, name: String) {
         val trimmed = name.trim()
         if (trimmed.isEmpty()) return
-        repository.addItem(trimmed)
+        repository.addItem(listId, trimmed)
     }
 }

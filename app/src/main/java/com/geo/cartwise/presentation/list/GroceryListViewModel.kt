@@ -8,6 +8,7 @@ import com.geo.cartwise.domain.usecase.DeleteGroceryItemUseCase
 import com.geo.cartwise.domain.usecase.ObserveGroceryItemsUseCase
 import com.geo.cartwise.domain.usecase.ObserveListBudgetUseCase
 import com.geo.cartwise.domain.usecase.ParseSpokenItemsUseCase
+import com.geo.cartwise.domain.usecase.RestockListUseCase
 import com.geo.cartwise.domain.usecase.SetItemCheckedUseCase
 import com.geo.cartwise.domain.usecase.SetListBudgetUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,7 @@ class GroceryListViewModel(
     private val deleteGroceryItem: DeleteGroceryItemUseCase,
     private val parseSpokenItems: ParseSpokenItemsUseCase,
     private val setListBudget: SetListBudgetUseCase,
+    private val restockList: RestockListUseCase,
     observeGroceryItems: ObserveGroceryItemsUseCase,
     observeListBudget: ObserveListBudgetUseCase
 ) : ViewModel() {
@@ -109,6 +111,21 @@ class GroceryListViewModel(
         _uiState.update { it.copy(showSetBudgetDialog = false) }
     }
 
+    fun onRestockClick() {
+        _uiState.update { it.copy(showRestockDialog = true) }
+    }
+
+    fun onRestockConfirmed() {
+        viewModelScope.launch {
+            restockList(listId)
+            _uiState.update { it.copy(showRestockDialog = false) }
+        }
+    }
+
+    fun onDismissRestockDialog() {
+        _uiState.update { it.copy(showRestockDialog = false) }
+    }
+
     class Factory(
         private val listId: Long,
         private val observeGroceryItems: ObserveGroceryItemsUseCase,
@@ -117,7 +134,8 @@ class GroceryListViewModel(
         private val deleteGroceryItem: DeleteGroceryItemUseCase,
         private val parseSpokenItems: ParseSpokenItemsUseCase,
         private val observeListBudget: ObserveListBudgetUseCase,
-        private val setListBudget: SetListBudgetUseCase
+        private val setListBudget: SetListBudgetUseCase,
+        private val restockList: RestockListUseCase
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -128,6 +146,7 @@ class GroceryListViewModel(
                 deleteGroceryItem,
                 parseSpokenItems,
                 setListBudget,
+                restockList,
                 observeGroceryItems,
                 observeListBudget
             ) as T

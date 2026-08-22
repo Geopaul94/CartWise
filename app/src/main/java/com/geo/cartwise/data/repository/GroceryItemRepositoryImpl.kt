@@ -35,6 +35,10 @@ class GroceryItemRepositoryImpl(
         dao.setChecked(id, isChecked)
     }
 
+    override suspend fun uncheckAll(listId: Long) {
+        dao.uncheckAll(listId)
+    }
+
     override suspend fun deleteItem(id: Long) {
         dao.delete(id)
     }

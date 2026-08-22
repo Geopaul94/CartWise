@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +34,7 @@ import com.geo.cartwise.presentation.list.components.AddItemBar
 import com.geo.cartwise.presentation.list.components.AisleHeader
 import com.geo.cartwise.presentation.list.components.BudgetSummaryBar
 import com.geo.cartwise.presentation.list.components.GroceryItemRow
+import com.geo.cartwise.presentation.list.components.RestockConfirmDialog
 import com.geo.cartwise.presentation.list.components.SetBudgetDialog
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -70,6 +72,14 @@ fun GroceryListScreen(
         )
     }
 
+    if (uiState.showRestockDialog) {
+        RestockConfirmDialog(
+            checkedCount = uiState.checkedItems.size,
+            onConfirm = viewModel::onRestockConfirmed,
+            onDismiss = viewModel::onDismissRestockDialog
+        )
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -80,6 +90,13 @@ fun GroceryListScreen(
                     }
                 },
                 actions = {
+                    // Restock is disabled when nothing is checked — nothing to reset.
+                    IconButton(
+                        onClick = viewModel::onRestockClick,
+                        enabled = uiState.checkedItems.isNotEmpty()
+                    ) {
+                        Icon(Icons.Filled.Refresh, contentDescription = "Restock list")
+                    }
                     IconButton(onClick = viewModel::onSetBudgetClick) {
                         Icon(Icons.Filled.AttachMoney, contentDescription = "Set budget")
                     }

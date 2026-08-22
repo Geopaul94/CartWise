@@ -14,5 +14,6 @@ interface GroceryItemRepository {
     suspend fun addItem(listId: Long, name: String, aisle: String, estimatedPrice: Double)
     suspend fun setChecked(id: Long, isChecked: Boolean)
     suspend fun setItemPrice(id: Long, price: Double)
+    suspend fun uncheckAll(listId: Long)
     suspend fun deleteItem(id: Long)
 }

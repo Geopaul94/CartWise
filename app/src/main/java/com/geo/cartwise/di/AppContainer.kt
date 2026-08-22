@@ -43,11 +43,16 @@ class AppContainer(context: Context) {
         .fallbackToDestructiveMigration()
         .build()
 
+    // Exposed for the Glance widget and its action callbacks, which run outside
+    // the normal ViewModel/UseCase path and need direct DAO access.
+    val groceryItemDao = database.groceryItemDao()
+    val groceryListDao = database.groceryListDao()
+
     private val groceryListRepository: GroceryListRepository =
-        GroceryListRepositoryImpl(database.groceryListDao(), database.groceryItemDao())
+        GroceryListRepositoryImpl(groceryListDao, groceryItemDao)
 
     private val groceryItemRepository: GroceryItemRepository =
-        GroceryItemRepositoryImpl(database.groceryItemDao())
+        GroceryItemRepositoryImpl(groceryItemDao)
 
     val observeGroceryListsUseCase = ObserveGroceryListsUseCase(groceryListRepository)
     val createGroceryListUseCase = CreateGroceryListUseCase(groceryListRepository)

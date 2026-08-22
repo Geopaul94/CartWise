@@ -29,6 +29,7 @@ reflect the finished UI.
 | 6 | Budget tracker | `estimatedPrice` on items, `budget` on lists (DB v4); `BudgetSummaryBar` (₹total/₹budget + progress bar, error at 90%); `SetBudgetDialog`; price field in `AddItemBar`; price on `GroceryItemRow` |
 | 7 | Smart restock | ↺ icon in top bar (disabled when nothing checked); `RestockConfirmDialog`; `RestockListUseCase` → `uncheckAll(listId)` bulk UPDATE |
 | 8 | Spend History | `SpendHistoryScreen` + `SpendHistoryViewModel`; `MonthPicker` (last 6 months); `SpendCategoryRow` with fraction progress bar; grand-total card; `observeSpendHistory()` DAO query (checked items grouped by YYYY-MM + aisle); ₹ chart icon in `ListsScreen` top bar navigates to history |
+| 9 | Home Screen Widget | `CartWiseWidget` (GlanceAppWidget) shows unchecked items from the busiest list; `CartWiseWidgetReceiver`; `ToggleItemActionCallback` checks off an item without opening the app; `GroceryItemDao` extended with `getById`, `getUncheckedByList`, `getListIdWithMostUnchecked`; `GroceryListDao` extended with `getNameById`; `AppContainer` exposes DAOs for widget access; registered in AndroidManifest |
 
 ---
 

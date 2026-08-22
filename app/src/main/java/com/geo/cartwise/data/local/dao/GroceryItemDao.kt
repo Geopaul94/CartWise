@@ -30,6 +30,25 @@ interface GroceryItemDao {
     @Query("UPDATE grocery_items SET isChecked = 0 WHERE listId = :listId")
     suspend fun uncheckAll(listId: Long)
 
+    @Query("SELECT * FROM grocery_items WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): GroceryItemEntity?
+
+    // Returns every unchecked item for a list; used by the home-screen widget
+    // to show what still needs to be bought.
+    @Query("SELECT * FROM grocery_items WHERE listId = :listId AND isChecked = 0 ORDER BY aisle ASC, name ASC")
+    suspend fun getUncheckedByList(listId: Long): List<GroceryItemEntity>
+
+    // The list with the most unchecked items is shown in the widget.
+    @Query("""
+        SELECT listId, COUNT(*) as count
+        FROM grocery_items
+        WHERE isChecked = 0
+        GROUP BY listId
+        ORDER BY count DESC
+        LIMIT 1
+    """)
+    suspend fun getListIdWithMostUnchecked(): RemainingCount?
+
     @Query("DELETE FROM grocery_items WHERE id = :id")
     suspend fun delete(id: Long)
 

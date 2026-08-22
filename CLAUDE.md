@@ -24,7 +24,8 @@ so screenshots reflect the finished UI.
 ~~6. **Budget Tracker**~~ ✅ done — `estimatedPrice` on items, `budget` on lists (DB v4); `BudgetSummaryBar`
    (₹total/₹budget + progress bar, error color at 90%); `SetBudgetDialog` (₹ icon in top bar); price
    field added to `AddItemBar`; price shown on `GroceryItemRow` when > 0
-7. **Smart Restock** — "Restock" action rebuilds last list's items in a new list with one tap
+~~7. **Smart Restock**~~ ✅ done — ↺ button in top bar (disabled until items are checked); `RestockConfirmDialog`
+   confirms before unchecking all checked items; `RestockListUseCase` → `uncheckAll(listId)` DAO query
 8. **Spend History** — monthly spend log by category (depends on sprint 6's price field)
 9. **Home screen widget** — Glance AppWidget showing active list, tap item to check off without opening app
 10. **Smart item entry autosuggest** — suggest name/brand/qty from local purchase history as user types

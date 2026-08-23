@@ -6,6 +6,7 @@ Source spec: `C:\Users\geopa\.claude\scratch\cyclewise\Building Apps\13 - CartWi
 (spec recommends Flutter — built in Kotlin/Compose per Geo's choice.)
 
 Repo: `D:\git clones\CartWise` — remote `https://github.com/Geopaul94/CartWise.git`, branch `main`.
+All 12 commits (Sprints 1–10) pushed to remote as of 2026-08-23.
 
 ---
 
@@ -35,63 +36,6 @@ reflect the finished UI.
 ---
 
 ## Remaining sprints
-
-### Sprint 8 — Spend History
-Monthly spend log: how much was spent per aisle category, built from checked items' estimated prices.
-
-**Key decisions:**
-- No new DB table needed — query `grocery_items` where `isChecked = 1` and group by month + aisle
-- New screen `SpendHistoryScreen` reachable from `ListsScreen` (trailing icon or menu)
-- Month selector (previous 6 months), bar chart or category breakdown per month
-
-**New files to create:**
-- `domain/model/SpendRecord.kt` — `(month: String, aisle: String, total: Double)`
-- `domain/usecase/ObserveSpendHistoryUseCase.kt` — DAO query grouping checked items by month + aisle
-- `data/local/dao/SpendHistoryDao.kt` (or add query to `GroceryItemDao`)
-- `presentation/history/SpendHistoryScreen.kt`
-- `presentation/history/SpendHistoryViewModel.kt`
-- `presentation/history/components/SpendCategoryRow.kt`
-- `presentation/history/components/MonthPicker.kt`
-
-**Nav:** add route `"spend_history"` in `CartWiseNavHost`; back arrow returns to lists.
-
----
-
-### Sprint 9 — Home Screen Widget
-Glance AppWidget showing the active list's unchecked items. Tap an item → toggle checked without opening the app.
-
-**Key decisions:**
-- Use `androidx.glance:glance-appwidget` (already in ecosystem, no extra dependency conflicts)
-- Widget shows the list with the most unchecked items (or the most recently opened list — TBD at sprint start)
-- Widget state sourced from Room directly via `GlanceStateDefinition`
-
-**New files to create:**
-- `widget/CartWiseWidget.kt` — `GlanceAppWidget` subclass
-- `widget/CartWiseWidgetReceiver.kt` — `GlanceAppWidgetReceiver`
-- `res/xml/cart_wise_widget_info.xml` — widget metadata (min size, update period)
-
-**Manifest additions:** `<receiver>` for the widget, `<meta-data>` for widget info.
-
-**Dependency to add:** `implementation("androidx.glance:glance-appwidget:<version>")`
-
----
-
-### Sprint 10 — Smart Item Entry Autosuggest
-As the user types in `AddItemBar`, suggest previously-added item names from purchase history.
-
-**Key decisions:**
-- Source: `grocery_items` table itself (names already there) — no separate history table needed
-- DAO query: `SELECT DISTINCT name FROM grocery_items WHERE name LIKE :query LIMIT 5 ORDER BY createdAt DESC`
-- Show suggestions in a `DropdownMenu` anchored to the name `OutlinedTextField`
-- Selecting a suggestion fills the name + auto-classifies aisle
-
-**New files to create:**
-- `domain/usecase/SuggestItemNamesUseCase.kt`
-- `presentation/list/components/ItemSuggestionDropdown.kt`
-
-**Modified files:** `AddItemBar.kt`, `GroceryListUiState.kt`, `GroceryListViewModel.kt`
-
----
 
 ### Sprint 11 — Family Sync (Firebase Realtime Database)
 Share a list via link. Partner checks items off in real time from another device.
